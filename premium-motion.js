@@ -1,0 +1,8 @@
+/* Central IA · interações visuais com fallback e movimento reduzido */
+(()=>{const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cards=document.querySelectorAll('.hero-card,.cat-card,.tool-card');
+if(!reduced&&window.matchMedia('(pointer:fine)').matches){
+cards.forEach(card=>{card.addEventListener('pointermove',e=>{const r=card.getBoundingClientRect();card.style.setProperty('--glow-x',((e.clientX-r.left)/r.width*100)+'%');card.style.setProperty('--glow-y',((e.clientY-r.top)/r.height*100)+'%');if(card.classList.contains('hero-card')){const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;card.style.transform='rotateY('+(x*3.5)+'deg) rotateX('+(-y*3.5)+'deg)'}});card.addEventListener('pointerleave',()=>{card.style.removeProperty('transform');card.style.removeProperty('--glow-x');card.style.removeProperty('--glow-y')})})}
+const hero=document.querySelector('.hero-card');if(hero){const orbit=document.createElement('div');orbit.className='premium-orbit';orbit.setAttribute('aria-hidden','true');hero.append(orbit)}
+const elements=[...document.querySelectorAll('.section-head,.cat-card,.tool-card,.feature-strip,.prompt-card,.mentor-panel,.mentor-output')];if('IntersectionObserver'in window&&!reduced){const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');observer.unobserve(entry.target)}})},{threshold:.06,rootMargin:'0px 0px -20px 0px'});elements.forEach((el,i)=>{el.setAttribute('data-premium-reveal','');el.style.setProperty('--reveal-delay',(i%4)*65+'ms');observer.observe(el)})}else{elements.forEach(el=>el.classList.add('is-visible'))}
+})();
